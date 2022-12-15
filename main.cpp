@@ -20,5 +20,6 @@ int main() {
         return -1;
     }
     main_window.renderLoop();
+    main_window.destroy();
     return 0;
 }

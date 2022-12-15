@@ -11,7 +11,7 @@ set(LIQS_SOURCE
         include/imgui/imgui_impl_glfw.cpp
         include/imgui/imgui_impl_opengl3.cpp
         include/imgui/imgui_tables.cpp
-        include/imgui/imgui_widgets.cpp src/vs.glsl src/fs.glsl src/VertexShader.cpp include/VertexShader.h)
+        include/imgui/imgui_widgets.cpp src/vs.glsl src/fs.glsl src/Shader.cpp include/Shader.h src/Camera.cpp include/Camera.h)
 
 include_directories(include)
 link_directories(lib)

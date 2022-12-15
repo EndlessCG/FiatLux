@@ -1,45 +1,33 @@
-#version 300 es
-precision highp float;
-out vec4 outColor;
+#version 330 core
+out vec4 FragColor;
 
-in vec2 tc;
-in vec3 wfn;
-in vec3 vertPos;
+in vec3 Normal;
+in vec3 FragPos;
 
-uniform int mode;
-uniform vec3 cameraPosition;
+uniform vec3 lightPos;
+uniform vec3 viewPos;
+uniform vec3 lightColor;
+uniform vec3 objectColor;
 
-const vec3 lightDirection = vec3(0.0, -1.0, -1.0);
-const vec4 ambientColor = vec4(0.01, 0.0, 0.0, 1.0);
-const vec4 diffuseColor = vec4(0.25, 0.0, 0.0, 1.0);
-const vec4 specularColor = vec4(1.0, 1.0, 1.0, 1.0);
-const float shininess = 40.0;
-const vec4 lightColor = vec4(1.0, 1.0, 1.0, 1.0);
-const float irradiPerp = 1.0;
+void main()
+{
+    // ambient
+    float ambientStrength = 0.1;
+    vec3 ambient = ambientStrength * lightColor;
 
-vec3 blinnPhongBRDF(vec3 lightDir, vec3 viewDir, vec3 normal, vec3 phongDiffuseCol, vec3 phongSpecularCol, float phongShininess) {
-    vec3 color = phongDiffuseCol;
-    vec3 halfDir = normalize(viewDir + lightDir);
-    float specDot = max(dot(halfDir, normal), 0.0);
-    color += pow(specDot, phongShininess) * phongSpecularCol;
-    return color;
+    // diffuse
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(lightPos - FragPos);
+    float diff = max(dot(norm, lightDir), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    // specular
+    float specularStrength = 0.5;
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 reflectDir = reflect(-lightDir, norm);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+    vec3 specular = specularStrength * spec * lightColor;
+
+    vec3 result = (ambient + diffuse + specular) * objectColor;
+    FragColor = vec4(result, 1.0);
 }
-
-void main() {
-    vec3 lightDir = normalize(-lightDirection);
-    vec3 viewDir = normalize(cameraPosition - vertPos);
-    vec3 n = normalize(wfn);
-
-    vec3 radiance = ambientColor.rgb;
-
-    float irradiance = max(dot(lightDir, n), 0.0) * irradiPerp;
-    if(irradiance > 0.0) {
-        vec3 brdf = blinnPhongBRDF(lightDir, viewDir, n, diffuseColor.rgb, specularColor.rgb, shininess);
-        radiance += brdf * irradiance * lightColor.rgb;
-    }
-
-    radiance = pow(radiance, vec3(1.0 / 2.2) ); // gamma correction
-    outColor.rgb = radiance;
-    outColor.a = 1.0;
-} 
-    
