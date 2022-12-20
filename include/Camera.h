@@ -1,9 +1,5 @@
-//
-// Created by Lenovo on 2022/12/15.
-//
-
-#ifndef LIQSURFACE_CAMERA_H
-#define LIQSURFACE_CAMERA_H
+#ifndef CAMERA_H
+#define CAMERA_H
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -131,5 +127,4 @@ private:
         Up    = glm::normalize(glm::cross(Right, Front));
     }
 };
-
-#endif //LIQSURFACE_CAMERA_H
+#endif
