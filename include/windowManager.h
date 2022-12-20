@@ -10,7 +10,7 @@
 
 class windowManager {
 public:
-    static constexpr float cube[] {
+    static constexpr double cube[] {
             -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
             0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
             0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -61,18 +61,19 @@ public:
     static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
     static void mouse_callback(GLFWwindow* window, double xpos, double ypos);
     static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
-    static void processInput(GLFWwindow *window);
+    void processInput(GLFWwindow *window);
 
 private:
     static Camera camera;
+    Material material = MATERIALS.at("OBSIDIAN");
     Shader* BlinnPhongShader;
     Shader* lightingCubeShader;
     unsigned int VBO, centerCubeVAO, lightCubeVAO;
-    static float lastX;
-    static float lastY;
+    static double lastX;
+    static double lastY;
     static bool firstMouse;
-    static float deltaTime;
-    static float lastFrame;
+    static double deltaTime;
+    static double lastFrame;
     GLFWwindow *window{};
 };
 

@@ -4,21 +4,20 @@
 
 #include "windowManager.h"
 #include <iostream>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/ext/matrix_clip_space.hpp>
 #define SHADER_PATH "..\\src\\shaders\\"
 
 windowManager::windowManager() {
 
 };
 
-float windowManager::lastX = SCR_HEIGHT / 2.0f;
-float windowManager::lastY = SCR_WIDTH / 2.0f;
+double windowManager::lastX = SCR_HEIGHT / 2.0f;
+double windowManager::lastY = SCR_WIDTH / 2.0f;
 bool windowManager::firstMouse = true;
-float windowManager::deltaTime = 0.0f;
-float windowManager::lastFrame = 0.0f;
+double windowManager::deltaTime = 0.0f;
+double windowManager::lastFrame = 0.0f;
 Camera windowManager::camera(glm::vec3(0.0f, 0.0f, 3.0f));
-const float windowManager::cube[];
+const double windowManager::cube[];
+
 
 int windowManager::createWindow(int w, int h) {
 
@@ -50,15 +49,15 @@ int windowManager::createWindow(int w, int h) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
     glBindVertexArray(centerCubeVAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (void*)(3 * sizeof(double)));
     glEnableVertexAttribArray(1);
 
     glGenVertexArrays(1, &lightCubeVAO);
     glBindVertexArray(lightCubeVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_DOUBLE, GL_FALSE, 6 * sizeof(double), (void*)0);
     glEnableVertexAttribArray(0);
 
     return 0;
@@ -66,13 +65,17 @@ int windowManager::createWindow(int w, int h) {
 
 void windowManager::renderLoop() {
     // TODO: change lightPos with imgui
-    glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+    double omega = 60;
+    double radius = 3;
+    double startFrame = glfwGetTime();
     while(!glfwWindowShouldClose(window)){
-        auto currentFrame = static_cast<float>(glfwGetTime());
+        double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        double theta = omega * (currentFrame - startFrame) / 100;
+        auto lightPos = glm::vec3(radius * cos(theta), radius * sin(theta), 0); 
+        
         processInput(window);
-
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glm::mat4 model(1.0f);
@@ -87,6 +90,7 @@ void windowManager::renderLoop() {
         BlinnPhongShader->setMat4("model", model);
         BlinnPhongShader->setMat4("projection", projection);
         BlinnPhongShader->setMat4("view", view);
+        BlinnPhongShader->setMaterial(material);
         glBindVertexArray(centerCubeVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -127,6 +131,14 @@ void windowManager::processInput(GLFWwindow *window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        material = MATERIALS.at("JADE");
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        material = MATERIALS.at("OBSIDIAN");
+    if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+        material = MATERIALS.at("GOLD");
+    if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+        material = MATERIALS.at("EMERALD");
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -143,8 +155,8 @@ void windowManager::framebuffer_size_callback(GLFWwindow* window, int width, int
 // -------------------------------------------------------
 void windowManager::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-    auto xpos = static_cast<float>(xposIn);
-    auto ypos = static_cast<float>(yposIn);
+    auto xpos = static_cast<double>(xposIn);
+    auto ypos = static_cast<double>(yposIn);
     if (firstMouse)
     {
         lastX = xpos;
@@ -152,8 +164,8 @@ void windowManager::mouse_callback(GLFWwindow* window, double xposIn, double ypo
         firstMouse = false;
     }
 
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    double xoffset = xpos - lastX;
+    double yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
 
     lastX = xpos;
     lastY = ypos;
@@ -165,5 +177,5 @@ void windowManager::mouse_callback(GLFWwindow* window, double xposIn, double ypo
 // ----------------------------------------------------------------------
 void windowManager::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
+    camera.ProcessMouseScroll(static_cast<double>(yoffset));
 }
