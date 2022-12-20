@@ -15,6 +15,7 @@ double windowManager::lastY = SCR_WIDTH / 2.0f;
 bool windowManager::firstMouse = true;
 double windowManager::deltaTime = 0.0f;
 double windowManager::lastFrame = 0.0f;
+bool windowManager::pause = false;
 Camera windowManager::camera(glm::vec3(0.0f, 0.0f, 3.0f));
 const double windowManager::cube[];
 
@@ -65,16 +66,18 @@ int windowManager::createWindow(int w, int h) {
 
 void windowManager::renderLoop() {
     // TODO: change lightPos with imgui
-    double omega = 60;
-    double radius = 3;
+    double omega = 180;
+    double radius = 1.5;
     double startFrame = glfwGetTime();
+    double pauseTime = 0;
     while(!glfwWindowShouldClose(window)){
         double currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        double theta = omega * (currentFrame - startFrame) / 100;
-        auto lightPos = glm::vec3(radius * cos(theta), radius * sin(theta), 0); 
-        
+        if(pause)
+            pauseTime += deltaTime;
+        double theta = omega * (currentFrame - startFrame - pauseTime) / 100;
+        auto lightPos = glm::vec3(radius * cos(theta), radius * sin(theta), radius * sin(theta));
         processInput(window);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -139,6 +142,8 @@ void windowManager::processInput(GLFWwindow *window)
         material = MATERIALS.at("GOLD");
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
         material = MATERIALS.at("EMERALD");
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        pause = !pause;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -153,10 +158,8 @@ void windowManager::framebuffer_size_callback(GLFWwindow* window, int width, int
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void windowManager::mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void windowManager::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-    auto xpos = static_cast<double>(xposIn);
-    auto ypos = static_cast<double>(yposIn);
     if (firstMouse)
     {
         lastX = xpos;

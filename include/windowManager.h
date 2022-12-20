@@ -74,6 +74,7 @@ private:
     static bool firstMouse;
     static double deltaTime;
     static double lastFrame;
+    static bool pause;
     GLFWwindow *window{};
 };
 
