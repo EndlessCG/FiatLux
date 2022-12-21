@@ -10,8 +10,8 @@ windowManager::windowManager() {
 
 };
 
-double windowManager::lastX = SCR_HEIGHT / 2.0f;
-double windowManager::lastY = SCR_WIDTH / 2.0f;
+double windowManager::lastX = 0;
+double windowManager::lastY = 0;
 bool windowManager::firstMouse = true;
 double windowManager::deltaTime = 0.0f;
 double windowManager::lastFrame = 0.0f;
@@ -22,7 +22,7 @@ const double windowManager::cube[];
 
 int windowManager::createWindow(int w, int h) {
 
-    window = glfwCreateWindow(w, h, "LiqSurface", nullptr, nullptr);
+    window = glfwCreateWindow(w, h, "FiatLux", nullptr, nullptr);
     if (window == nullptr){
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -134,6 +134,10 @@ void windowManager::processInput(GLFWwindow *window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera.ProcessKeyboard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         material = MATERIALS.at("JADE");
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -142,7 +146,7 @@ void windowManager::processInput(GLFWwindow *window)
         material = MATERIALS.at("GOLD");
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
         material = MATERIALS.at("EMERALD");
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
         pause = !pause;
 }
 

@@ -3,8 +3,6 @@
 #include <GLFW/glfw3.h>
 #include "windowManager.h"
 
-int window_length = 800;
-int window_height = 600;
 void initGL(){
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -18,7 +16,9 @@ void initGL(){
 int main() {
     initGL();
     windowManager main_window;
-    if (main_window.createWindow(window_length, window_height) != 0){
+    GLFWmonitor* pMonitor = glfwGetPrimaryMonitor();
+    auto mode = glfwGetVideoMode(pMonitor);
+    if (main_window.createWindow(mode->width, mode->height) != 0){
         return -1;
     }
     main_window.renderLoop();
